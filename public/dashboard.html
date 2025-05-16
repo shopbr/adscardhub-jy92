@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Ads Card Hub</title>
+    <style>
+        :root {
+            --primary-color: #1877F2;
+            --primary-dark: #166FE5;
+            --secondary-color: #1C1E21;
+            --text-color: #E4E6EB;
+            --text-light: #B0B3B8;
+            --background-color: #18191A;
+            --surface-color: #242526;
+            --surface-color-hover: #2C2D2E;
+            --white: #FFFFFF;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.4);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--surface-color);
+            padding: 30px 0;
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar h2 {
+            padding: 0 30px;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--text-light);
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: var(--surface-color-hover);
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu li.active {
+            background-color: var(--surface-color-hover);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+            box-shadow: -5px 0 15px rgba(24, 119, 242, 0.2);
+        }
+
+        .sidebar-menu li.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .container {
+            background-color: var(--surface-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(24, 119, 242, 0.2);
+            min-height: calc(100vh - 60px);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        main {
+            width: 100%;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+            color: var(--white);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .welcome-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .payment-panel {
+            display: none;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .payment-panel.active {
+            display: block;
+        }
+
+        .payment-panel#inicio-panel {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .payment-panel#inicio-panel.active {
+            display: flex;
+        }
+
+        .payment-panel#inicio-panel > div:first-child {
+            margin-bottom: 20px;
+        }
+
+        .payment-panel#inicio-panel > div:last-child {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+            align-items: stretch;
+        }
+
+        .payment-title {
+            font-size: 24px;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .payment-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .payment-button {
+            background-color: var(--surface-color-hover);
+            color: var(--text-color);
+            padding: 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .payment-button:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .payment-button .amount {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .payment-button .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .floating-panel {
+            position: relative;
+            background-color: var(--surface-color);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            width: 400px;
+            margin: 0 auto;
+        }
+
+        .vertical-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .vertical-button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            width: 100%;
+        }
+
+        .vertical-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+    background-color: var(--surface-color);
+    padding: 50px;
+    border-radius: var(--border-radius);
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    margin: 0 auto;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-close {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: var(--transition);
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.modal-title {
+    font-size: 32px;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    padding-right: 50px;
+    font-weight: 600;
+}
+
+.modal-text {
+    color: var(--text-color);
+    line-height: 2;
+    margin-bottom: 30px;
+    font-size: 18px;
+}
+
+.modal-section {
+    margin-bottom: 30px;
+    padding: 25px;
+    background-color: var(--surface-color-hover);
+    border-radius: 12px;
+}
+
+.modal-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.modal-section p {
+    margin-bottom: 20px;
+    color: var(--text-light);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+        .modal-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-section p {
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .modal-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--surface-color-hover);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        .card-panel {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-list {
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-list-header-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 15px 20px;
+            background-color: var(--surface-color-hover);
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card-list-header-row div {
+            text-align: center;
+        }
+
+        .card-list-header-row div:first-child {
+            text-align: left;
+        }
+
+        .card-list-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .card-list-item .card-name {
+            text-align: left;
+        }
+
+        .card-list-item .card-expiry,
+        .card-list-item .card-price,
+        .card-list-item div:last-child {
+            text-align: center;
+        }
+
+        .card-list-item:hover {
+            background-color: var(--surface-color-hover);
+        }
+
+        .card-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .card-name {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .card-limit {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .card-expiry {
+            color: var(--text-light);
+        }
+
+        .card-price {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination-button {
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        .pagination-button:hover {
+            background-color: var(--surface-color-hover);
+        }
+
+        .pagination-button.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .pagination-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .buy-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .buy-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Modal de Pagamento PIX */
+        .pix-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pix-modal-content {
+            background-color: var(--surface-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(24, 119, 242, 0.3);
+        }
+
+        .pix-modal h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .pix-qr-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px auto;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pix-qr-container img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .pix-code {
+            background-color: var(--surface-color-hover);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-family: monospace;
+            color: var(--text-color);
+        }
+
+        .pix-instructions {
+            color: var(--text-light);
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .close-modal {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        .close-modal:hover {
+            background-color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div style="background-color: var(--surface-color-hover); padding: 15px; margin: 20px; margin-bottom: 40px; text-align: center; border: 2px solid var(--primary-color); box-shadow: 0 0 15px rgba(24, 119, 242, 0.3); border-radius: 12px;">
+            <h2 style="margin: 0; white-space: nowrap;"><span style="color: var(--primary-color);">ADS</span><span style="color: var(--white);"> Card Hub</span></h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active" data-panel="inicio">Início</li>
+            <li onclick="window.location.href='cards.html'">Cards</li>
+            <li data-panel="cc">CC's</li>
+            <li data-panel="checker">Checker</li>
+            <li data-panel="editaveis">Editáveis</li>
+            <li data-panel="meta">Meta Code</li>
+            <li data-panel="compras" style="color: var(--primary-color);">Sistema De Compras</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="container">
+            <header>
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="flex: 1;"></div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="logout-btn" id="suporteBtn" style="background-color: var(--primary-color);">Suporte</button>
+                        <button class="logout-btn" onclick="logout()">Sair</button>
+                    </div>
+                </div>
+            </header>
+            <main>
+                <div class="payment-panel active" id="inicio-panel">
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <h1 style="color: var(--primary-color); font-size: 32px; margin-bottom: 20px;">Bem-vindo ao Ads Card Hub</h1>
+                        <p style="color: var(--text-light); font-size: 18px; max-width: 800px; margin: 0 auto; line-height: 1.6;">
+                            A plataforma mais segura e eficiente para gerenciar suas campanhas publicitárias no Facebook e Instagram.
+                        </p>
+                    </div>
+
+                    <div style="display: flex; gap: 30px; max-width: 1200px; margin: 0 auto 40px;">
+                        <div style="flex: 1;">
+                            <div style="background-color: var(--surface-color-hover); padding: 25px; border-radius: var(--border-radius); text-align: center; margin-bottom: 20px; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://ideogram.ai/assets/image/lossless/response/rg1wqKhfQAS1mOq7dzoSWQ'); background-size: cover; background-position: center; opacity: 0.1;"></div>
+                                <div style="position: relative; z-index: 1;">
+                                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">Consultáveis Disponíveis</h3>
+                                    <p style="color: var(--text-light); margin-bottom: 20px;">Acesse nossa seleção de consultáveis com limites variados para suas campanhas.</p>
+                                    <button class="vertical-button" style="max-width: 300px; margin: 0 auto;" onclick="document.querySelector('[data-panel=\'card\']').click()">Ver Consultáveis</button>
+                                </div>
+                            </div>
+
+                            <div style="background-color: var(--surface-color-hover); padding: 25px; border-radius: var(--border-radius); text-align: center; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://ideogram.ai/assets/image/lossless/response/bmK3MsovT0SPkcZHr5vDAw'); background-size: cover; background-position: center; opacity: 0.1;"></div>
+                                <div style="position: relative; z-index: 1;">
+                                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">Meta Code</h3>
+                                    <p style="color: var(--text-light); margin-bottom: 20px;">Gere códigos Meta Ads de forma rápida e segura para suas campanhas.</p>
+                                    <button class="vertical-button" style="max-width: 300px; margin: 0 auto;" onclick="document.querySelector('[data-panel=\'meta\']').click()">Gerar Código</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="flex: 1;">
+                            <div class="floating-panel" style="height: 100%; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://ideogram.ai/assets/image/lossless/response/3ZBiDK5ZRlGcCL6GkJNCfg'); background-size: cover; background-position: center; opacity: 0.1;"></div>
+                                <div style="position: relative; z-index: 1; padding: 20px; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                    <div class="vertical-buttons" style="width: 100%;">
+                                        <button class="vertical-button" onclick="showQuemSomos()">Quem Somos Nós</button>
+                                        <button class="vertical-button" onclick="showNovidades()">Novidades</button>
+                                        <button class="vertical-button" onclick="showAtualizacoes()">Atualizações</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-panel" id="card-panel">
+                    <h2 class="payment-title" style="color: var(--primary-color);">Cards Disponíveis</h2>
+                    <div class="card-panel">
+                        <div class="card-list">
+                            <div class="card-list-header-row">
+                                <div>Card</div>
+                                <div>Limite</div>
+                                <div>Validade</div>
+                                <div>Preço</div>
+                                <div>Ação</div>
+                            </div>
+                            <div class="card-list-content">
+                                <!-- Cards will be loaded here dynamically -->
+                            </div>
+                            <div class="pagination">
+                                <!-- Pagination buttons will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-panel" id="cc-panel">
+                    <h2 class="payment-title" style="color: var(--primary-color);">CC's Disponíveis</h2>
+                    <div class="card-panel">
+                        <div style="display: flex; gap: 20px; margin-bottom: 30px; justify-content: center;">
+                            <button class="vertical-button" style="max-width: 200px; background-color: #1A1F71;" onclick="showCardList('visa')">VISA</button>
+                            <button class="vertical-button" style="max-width: 200px; background-color: #EB001B;" onclick="showCardList('mastercard')">MASTERCARD</button>
+                        </div>
+                        <div class="card-list">
+                            <div class="card-list-header-row">
+                                <div>Card</div>
+                                <div>Validade</div>
+                                <div>Preço</div>
+                                <div>Ação</div>
+                            </div>
+                            <div class="card-list-content">
+                                <!-- CC's will be loaded here dynamically -->
+                            </div>
+                            <div class="pagination">
+                                <!-- Pagination buttons will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-panel" id="checker-panel">
+                    <h2 class="payment-title" style="color: var(--primary-color);">Checker de Cartões</h2>
+                    <div class="card-panel">
+                        <div style="background-color: var(--surface-color-hover); padding: 30px; border-radius: var(--border-radius); margin-bottom: 30px;">
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; color: var(--text-light); margin-bottom: 10px; font-size: 16px;">Insira os cartões para verificação (um por linha)</label>
+                                <textarea id="ccInput" style="width: 100%; height: 150px; padding: 15px; background-color: var(--surface-color); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: var(--text-color); font-size: 14px; resize: vertical;" placeholder="4532 XXXX XXXX XXXX|MM|YY|CVV"></textarea>
+                            </div>
+                            <button id="checkCCBtn" class="vertical-button" style="max-width: 200px; margin: 0 auto; display: block;">Verificar Cartões</button>
+                        </div>
+
+                        <div style="display: flex; gap: 20px; margin-top: 20px;">
+                            <div style="flex: 1; background-color: var(--surface-color-hover); padding: 20px; border-radius: var(--border-radius); text-align: center;">
+                                <h3 style="color: #28a745; margin-bottom: 10px; font-size: 18px;">LIVE</h3>
+                                <span id="liveCount" style="font-size: 32px; font-weight: bold; color: #28a745;">0</span>
+                            </div>
+                            <div style="flex: 1; background-color: var(--surface-color-hover); padding: 20px; border-radius: var(--border-radius); text-align: center;">
+                                <h3 style="color: #dc3545; margin-bottom: 10px; font-size: 18px;">DIE</h3>
+                                <span id="dieCount" style="font-size: 32px; font-weight: bold; color: #dc3545;">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-panel" id="editaveis-panel">
+                    <h2 class="payment-title" style="color: var(--primary-color);">Editáveis</h2>
+                    <div class="card-panel">
+                        <div class="card-list">
+                            <div class="card-list-header-row" style="padding: 15px 20px; display: grid; grid-template-columns: 2fr 2fr 1fr 1fr;">
+                                <div>Documento</div>
+                                <div style="text-align: center;">Tipo</div>
+                                <div>Preço</div>
+                                <div style="text-align: right;">Ação</div>
+                            </div>
+                            <div class="card-list-item" style="padding: 15px 20px; display: grid; grid-template-columns: 2fr 2fr 1fr 1fr;">
+                                <div class="card-name" style="font-size: 16px;">RG</div>
+                                <div class="card-type" style="font-size: 16px; text-align: center;">Documento de Identidade</div>
+                                <div class="card-price" style="font-size: 16px;">R$ 90,00</div>
+                                <div style="text-align: right;">
+                                    <button class="buy-button" style="padding: 6px 12px; font-size: 14px;" onclick="buyEditavel('RG', '90,00')">
+                                        <i class="fas fa-shopping-cart"></i> Comprar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-list-item" style="padding: 15px 20px; display: grid; grid-template-columns: 2fr 2fr 1fr 1fr;">
+                                <div class="card-name" style="font-size: 16px;">CPF</div>
+                                <div class="card-type" style="font-size: 16px; text-align: center;">Cadastro de Pessoa Física</div>
+                                <div class="card-price" style="font-size: 16px;">R$ 50,00</div>
+                                <div style="text-align: right;">
+                                    <button class="buy-button" style="padding: 6px 12px; font-size: 14px;" onclick="buyEditavel('CPF', '50,00')">Comprar</button>
+                                </div>
+                            </div>
+                            <div class="card-list-item" style="padding: 15px 20px; display: grid; grid-template-columns: 2fr 2fr 1fr 1fr;">
+                                <div class="card-name" style="font-size: 16px;">Faturas</div>
+                                <div class="card-type" style="font-size: 16px; text-align: center;">Documento Financeiro</div>
+                                <div class="card-price" style="font-size: 16px;">R$ 30,00</div>
+                                <div style="text-align: right;">
+                                    <button class="buy-button" style="padding: 6px 12px; font-size: 14px;" onclick="buyEditavel('FATURAS', '30,00')">Comprar</button>
+                                </div>
+                            </div>
+                            <div class="card-list-item" style="padding: 15px 20px; display: grid; grid-template-columns: 2fr 2fr 1fr 1fr;">
+                                <div class="card-name" style="font-size: 16px;">Extratos</div>
+                                <div class="card-type" style="font-size: 16px; text-align: center;">Documento Bancário</div>
+                                <div class="card-price" style="font-size: 16px;">R$ 50,00</div>
+                                <div style="text-align: right;">
+                                    <button class="buy-button" style="padding: 6px 12px; font-size: 14px;" onclick="buyEditavel('EXTRATOS', '50,00')">Comprar</button>
+                                </div>
+                            </div>
+                            <div class="card-list-item" style="padding: 15px 20px; display: grid; grid-template-columns: 2fr 2fr 1fr 1fr;">
+                                <div class="card-name" style="font-size: 16px;">Certidão</div>
+                                <div class="card-type" style="font-size: 16px; text-align: center;">Documento Oficial</div>
+                                <div class="card-price" style="font-size: 16px;">R$ 60,00</div>
+                                <div style="text-align: right;">
+                                    <button class="buy-button" style="padding: 6px 12px; font-size: 14px;" onclick="buyEditavel('CERTIDAO', '60,00')">Comprar</button>
+                                </div>
+                            </div>
+                            <div class="card-list-item" style="padding: 15px 20px; display: grid; grid-template-columns: 2fr 2fr 1fr 1fr;">
+                                <div class="card-name" style="font-size: 16px;">Contratos</div>
+                                <div class="card-type" style="font-size: 16px; text-align: center;">Documento Legal</div>
+                                <div class="card-price" style="font-size: 16px;">R$ 80,00</div>
+                                <div style="text-align: right;">
+                                    <button class="buy-button" style="padding: 6px 12px; font-size: 14px;" onclick="buyEditavel('CONTRATOS', '80,00')">Comprar</button>
+                                </div>
+                            </div>
+                            <div class="card-list-item" style="padding: 15px 20px; display: grid; grid-template-columns: 2fr 2fr 1fr 1fr;">
+                                <div class="card-name" style="font-size: 16px;">Atestados</div>
+                                <div class="card-type" style="font-size: 16px; text-align: center;">Documento Médico</div>
+                                <div class="card-price" style="font-size: 16px;">R$ 70,00</div>
+                                <div style="text-align: right;">
+                                    <button class="buy-button" style="padding: 6px 12px; font-size: 14px;" onclick="buyEditavel('ATESTADOS', '70,00')">Comprar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-panel" id="compras-panel">
+                    <h2 class="payment-title" style="color: var(--primary-color);">Sistema De Compras</h2>
+                    <div class="card-panel">
+                        <div style="display: flex; gap: 20px; margin-top: 20px;">
+                            <div style="flex: 1; background-color: var(--surface-color-hover); padding: 20px; border-radius: var(--border-radius);">
+                                <div style="background-color: var(--surface-color); padding: 30px; border-radius: 12px; height: 100%;">
+                                    <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 18px;">Como Funciona Nosso Sistema De Compras</h3>
+                                    <p style="color: var(--text-light); margin-bottom: 20px; font-size: 14px; line-height: 1.6;">
+                                        Ao realizar sua compra, escaneie o QR Code e envie uma mensagem para nosso <span style="color: var(--primary-color);">Gerente</span>, enviando o pedido efetuado.
+                                    </p>
+                                </div>
+                            </div>
+                            <div style="flex: 1; background-color: var(--surface-color-hover); padding: 20px; border-radius: var(--border-radius);">
+                                <div style="background-color: var(--surface-color); padding: 30px; border-radius: 12px; height: 100%; text-align: center;">
+                                    <img src="https://i.postimg.cc/tCK4jK3L/qr-code-plus-9.png" alt="QR Code" style="width: 200px; height: 200px; margin-bottom: 15px;">
+                                    <p style="color: var(--text-light); margin-bottom: 10px;">Escaneie o QR Code para acessar</p>
+                                    <a href="https://t.me/jotadev_00" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">https://t.me/jotadev_00</a>
+                                    <p style="color: var(--text-light); margin-top: 10px;"> </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-panel" id="meta-panel">
+                    <h2 class="payment-title" style="color: var(--primary-color);">Meta Code</h2>
+                    <div style="display: flex; gap: 30px; margin-top: 30px;">
+                        <!-- Left Panel - Virtual Card -->
+                        <div style="flex: 1; background-color: var(--surface-color-hover); padding: 30px; border-radius: var(--border-radius);">
+                            <div style="background: linear-gradient(135deg, #1a1b1e 0%, #242526 100%); padding: 30px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                                <div style="margin-bottom: 25px;">
+                                    <label style="display: block; color: var(--text-light); margin-bottom: 8px; font-size: 14px;">Nome do Titular</label>
+                                    <input type="text" id="cardName" style="width: 100%; padding: 12px; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: var(--text-color); font-size: 16px; text-transform: uppercase;" placeholder="NOME COMO APARECE NO CARTÃO" maxlength="30" oninput="this.value = this.value.toUpperCase()">
+                                </div>
+                                <div style="margin-bottom: 25px;">
+                                    <label style="display: block; color: var(--text-light); margin-bottom: 8px; font-size: 14px;">Número do Cartão</label>
+                                    <input type="text" id="cardNumber" style="width: 100%; padding: 12px; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: var(--text-color); font-size: 16px;" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCardNumber(this)">
+                                </div>
+                                <div style="display: flex; gap: 20px; margin-bottom: 25px;">
+                                    <div style="flex: 1;">
+                                        <label style="display: block; color: var(--text-light); margin-bottom: 8px; font-size: 14px;">Validade</label>
+                                        <input type="text" id="cardExpiry" style="width: 100%; padding: 12px; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: var(--text-color); font-size: 16px;" placeholder="MM/AA" maxlength="5" oninput="formatExpiry(this)">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="display: block; color: var(--text-light); margin-bottom: 8px; font-size: 14px;">CVV</label>
+                                        <input type="text" id="cardCvv" style="width: 100%; padding: 12px; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: var(--text-color); font-size: 16px;" placeholder="XXX" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel - Meta Code Generator -->
+                        <div style="flex: 1; background-color: var(--surface-color-hover); padding: 30px; border-radius: var(--border-radius);">
+                            <h3 style="color: var(--primary-color); margin-bottom: 20px; font-size: 20px;">Gerador de Meta Code</h3>
+                            <div style="background-color: var(--surface-color); padding: 30px; border-radius: 12px; margin-bottom: 20px;">
+                                <div id="metaCodeDisplay" style="color: var(--text-color); font-size: 18px; font-weight: 500; letter-spacing: 0.5px; padding: 20px; background-color: var(--surface-color-hover); border-radius: 8px; margin: 10px 0; text-align: center;">
+                                    Seu código aparecerá aqui
+                                </div>
+                            </div>
+                            <button class="vertical-button" style="max-width: 200px; margin: 0 auto; display: block;" id="updateMetaCodeBtn">Atualizar</button>
+                            <div id="metaCodeStatus" style="color: var(--text-light); font-size: 14px; text-align: center; margin-top: 15px;">
+                                Clique em Atualizar para vincular o seu cartão ao Meta Code
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+                    </div>
+                        </div>
+
+    <!-- Modal Quem Somos -->
+    <div class="modal" id="quemSomosModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('quemSomosModal')">&times;</button>
+            <h2 class="modal-title">Quem Somos Nós</h2>
+            <div class="modal-text">
+                <p>Ads Consultáveis Hub é uma empresa dedicada a facilitar a escalabilidade das suas campanhas publicitárias no Facebook e Instagram. Oferecemos a melhor e mais segura forma de adquirir e gerar códigos Meta Ads para que você possa expandir e otimizar seus anúncios de maneira eficaz e sem complicações.</p>
+                
+                <p>Nosso compromisso é proporcionar a você as ferramentas necessárias para escalar suas campanhas publicitárias com segurança e agilidade. Através da nossa plataforma, você pode adquirir consultáveis e gerar códigos Meta Ads de forma simples e rápida, garantindo um processo sem erros e totalmente confiável.</p>
+                
+                <div class="modal-section">
+                    <h3>O que fazemos:</h3>
+                    <p><strong>Facilitação na Escalada de Anúncios no Facebook:</strong> Oferecemos soluções práticas para ajudá-lo a aumentar o alcance das suas campanhas no Facebook e Instagram com facilidade.</p>
+                    
+                    <p><strong>Segurança e Confiabilidade:</strong> Garantimos o melhor e mais seguro método de receber o seu código Meta, com processos de pagamento e geração de código protegidos e transparentes.</p>
+                    
+                    <p><strong>Soluções Rápidas e Eficientes:</strong> A plataforma foi criada para oferecer a melhor experiência, permitindo que você se concentre no crescimento do seu negócio, enquanto cuidamos de toda a parte técnica de anúncios.</p>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <!-- Modal Novidades -->
+    <div class="modal" id="novidadesModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('novidadesModal')">&times;</button>
+            <h2 class="modal-title">Novidades do Ads Consultáveis Hub</h2>
+            <div class="modal-text">
+                <p>Ads Consultáveis Hub continua inovando no mercado de publicidade digital, oferecendo soluções cada vez mais práticas e seguras para os anunciantes que buscam expandir suas campanhas no Facebook e Instagram. Estamos constantemente aprimorando nossos serviços para garantir que você tenha a melhor experiência possível ao escalar seus anúncios de forma eficiente e sem complicações.</p>
+                
+                <div class="modal-section">
+                    <h3>Meta Ads: A Forma Mais Segura de Escalar Seus Anúncios</h3>
+                    <p>Nosso principal foco sempre foi oferecer Meta Ads de forma segura, e agora trazemos novas funcionalidades que tornam esse processo ainda mais confiável e fácil para nossos usuários. Com nossa plataforma, você pode ter certeza de que está fazendo suas transações e gerando códigos para suas campanhas com total segurança.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>Principais Novidades:</h3>
+                    <p><strong>Geração de Códigos Meta Ads 100% Segura:</strong> Introduzimos um sistema de verificação robusto para garantir que todos os códigos Meta Ads gerados sejam válidos e livres de erros, sem riscos para suas campanhas.</p>
+                    
+                    <p><strong>Proteção Total de Dados:</strong> Agora, além de oferecer transações seguras para a compra de consultáveis, todos os dados inseridos na plataforma são criptografados, oferecendo mais proteção para seus dados financeiros e campanhas publicitárias.</p>
+                    
+                    <p><strong>Suporte Técnico Rápido e Eficiente:</strong> Nossa equipe de suporte está mais preparada do que nunca para ajudar você em qualquer etapa da criação ou escalada dos seus anúncios, garantindo que seu processo de publicidade seja tranquilo e eficaz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Atualizações -->
+    <div class="modal" id="atualizacoesModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('atualizacoesModal')">&times;</button>
+            <h2 class="modal-title">Atualizações</h2>
+            <div class="modal-text">
+                <p>No Ads Consultáveis Hub, estamos sempre inovando para oferecer aos nossos usuários uma experiência mais eficiente, segura e flexível ao gerenciar suas campanhas de Meta Ads. Estamos animados em compartilhar as últimas atualizações que tornam nossa plataforma ainda mais poderosa e prática para atender suas necessidades.</p>
+                
+                <div class="modal-section">
+                    <h3>Novos Métodos para Adicionar Créditos e Realizar Compras no Painel</h3>
+                    <p>Agora, você pode adicionar créditos diretamente ao seu painel de forma rápida e segura para realizar compras de consultáveis e códigos Meta Ads. Com essa atualização, você tem um método prático e ágil para financiar suas transações dentro da plataforma, sem complicações.</p>
+                    
+                    <p>Com a possibilidade de adicionar créditos ao painel, você ganha controle total sobre seu saldo, podendo realizar compras conforme necessário, de maneira simples e eficiente. Esses créditos podem ser usados para adquirir consultáveis, cartões de crédito e consultáveis editáveis, oferecendo mais flexibilidade e controle nas suas transações dentro da plataforma.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>Compras de Consultáveis</h3>
+                    <p>Adquirir consultáveis diretamente em nossa plataforma agora está mais fácil! Esses produtos permitem que você tenha acesso a dados detalhados e personalizados, otimizando suas campanhas com insights precisos para alcançar melhores resultados.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>Consultáveis de Crédito (CCs) para Anúncios</h3>
+                    <p>Realizar compras diretamente com consultáveis de crédito (CCs) também é uma das opções disponíveis em nosso painel. Agora, você pode adicionar créditos via consultáveis de crédito, facilitando o financiamento de suas campanhas no Meta Ads com segurança e rapidez.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>Editáveis</h3>
+                    <p>Oferecemos também editáveis, permitindo ajustes conforme necessário para personalizar sua experiência e garantir que você tenha controle total sobre os créditos utilizados e a configuração das suas campanhas publicitárias.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QR Code -->
+    <div class="modal" id="qrCodeModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('qrCodeModal')">&times;</button>
+            <h2 class="modal-title">Acesso Antecipado</h2>
+            <div class="modal-text">
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="background-color: var(--surface-color-hover); padding: 50px; border-radius: var(--border-radius); display: inline-block;">
+                        <img src="https://i.postimg.cc/BnQzK8N4/qr-code-plus-9.png" alt="QR Code" style="width: 200px; height: 200px; margin-bottom: 15px;">
+                        <p style="color: var(--text-light); margin-bottom: 10px;">Escaneie o QR Code para acessar</p>
+                        <a href="https://wa.me/14376079420" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">https://t.me/jotadev_00
+</a>
+                        <p style="color: var(--text-light); margin-top: 10px;"></p>
+                    </div>
+                </div>
+                <div class="modal-section">
+                    <h3>Como obter acesso antecipado:</h3>
+                    <p>Garanta acesso antecipado ao nosso painel full, ao mandar mensagem para o <span style="color: var(--primary-color); font-weight: 600;">Gerente da Ads Consultáveis Hub</span>.</p>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 20px;">Painel Full</h3>
+                    <ul style="list-style: none; padding: 0; margin: 15px 0;">
+                        <li style="margin-bottom: 10px;">- Compras Consultáveis (+2713) Consultáveis</li>
+                        <li style="margin-bottom: 10px;">- Compras CCs (+1892) CCs</li>
+                        <li style="margin-bottom: 10px;">- Compras Editáveis (+714) Documentos</li>
+                        <li style="margin-bottom: 10px;">- Meta Code</li>
+                    </ul>
+                    
+                    <p style="color: var(--text-light); margin-top: 20px;">Ofereça um preço para nosso Gerente e ele ficará feliz em escuta-los!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pagamento -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content" style="max-width: 650px; padding: 50px;">
+            <button class="modal-close" onclick="closeModal('paymentModal')">&times;</button>
+            <h2 class="modal-title" style="font-size: 24px; margin-bottom: 20px;">Pagamento</h2>
+            <div class="modal-text">
+                <div style="text-align: center;">
+                    <div style="background-color: var(--surface-color-hover); padding: 20px; border-radius: var(--border-radius);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                            <div style="text-align: left;">
+                                <h3 style="color: var(--primary-color); margin-bottom: 10px; font-size: 18px;">Detalhes do Consultável</h3>
+                                <p style="color: var(--text-light); margin-bottom: 5px; font-size: 14px;">Consultável: <span id="modalConsultavelNumber"></span></p>
+                                <p style="color: var(--text-light); margin-bottom: 5px; font-size: 14px;">Validade: <span id="modalConsultavelExpiry"></span></p>
+                                <p style="color: var(--text-light); margin-bottom: 5px; font-size: 14px;">Preço: <span id="modalConsultavelPrice"></span></p>
+                            </div>
+                            <div style="text-align: center;">
+                                <h3 style="color: var(--primary-color); margin-bottom: 10px; font-size: 18px;">Pagamento via PIX</h3>
+                                <img src="https://i.postimg.cc/tCK4jK3L/qr-code-plus-9.png" alt="QR Code PIX" style="width: 170px; height: 170px; margin-bottom: 10px;">
+                                <p style="color: var(--text-light); margin-bottom: 5px; font-size: 14px;">Chave PIX:</p>
+                                <p style="color: var(--primary-color); font-weight: 600; font-size: 14px;">f28d2f3e-2dd9-4e21-b4e9-dfe7c9127cf7</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Suporte -->
+    <div class="modal" id="suporteModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('suporteModal')">&times;</button>
+            <h2 class="modal-title">Suporte</h2>
+            <div class="modal-text">
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="background-color: var(--surface-color-hover); padding: 20px; border-radius: var(--border-radius); display: inline-block;">
+                        <img src="https://i.postimg.cc/tCK4jK3L/qr-code-plus-9.png" alt="QR Code" style="width: 200px; height: 200px; margin-bottom: 15px;">
+                        <p style="color: var(--text-light); margin-bottom: 10px;">Escaneie o QR Code para acessar</p>
+                        <a href="https://t.me/jotadev_00" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">https://t.me/jotadev_00</a>
+                        <p style="color: var(--text-light); margin-top: 10px;"> </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Alerta de Segurança -->
+    <div class="modal" id="securityAlertModal">
+        <div class="modal-content" style="max-width: 500px; padding: 0; border-radius: 20px; overflow: hidden; background: linear-gradient(145deg, #1a1b1e, #242526); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div style="position: relative; padding: 30px; text-align: center;">
+                <button class="modal-close" onclick="closeModal('securityAlertModal')" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.1); border: none; width: 30px; height: 30px; border-radius: 50%; color: var(--text-light); cursor: pointer; transition: all 0.3s ease;">&times;</button>
+                
+                <div style="margin-bottom: 25px;">
+                    <img src="https://cdn-icons-png.flaticon.com/128/559/559375.png" style="width: 80px; height: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(220, 53, 69, 0.3));">
+                </div>
+                
+                <h2 style="color: #dc3545; font-size: 24px; font-weight: 600; margin: 0; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                    Tentativa de Recebimento de Código Meta Detectada!
+                </h2>
+            </div>
+            
+            <div style="background: rgba(220, 53, 69, 0.1); padding: 20px; text-align: center; border-top: 1px solid rgba(220, 53, 69, 0.2);">
+                <button onclick="closeModal('securityAlertModal')" style="background: #dc3545; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Resultado do Checker -->
+    <div class="modal" id="checkerResultModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <button class="modal-close" onclick="closeModal('checkerResultModal')">&times;</button>
+            <h2 class="modal-title">Resultado da Verificação</h2>
+            <div class="modal-text">
+                <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+                    <div style="flex: 1; background-color: var(--surface-color-hover); padding: 20px; border-radius: var(--border-radius); text-align: center;">
+                        <h3 style="color: #28a745; margin-bottom: 10px; font-size: 18px;">LIVE</h3>
+                        <span id="modalLiveCount" style="font-size: 32px; font-weight: bold; color: #28a745;">0</span>
+                    </div>
+                    <div style="flex: 1; background-color: var(--surface-color-hover); padding: 20px; border-radius: var(--border-radius); text-align: center;">
+                        <h3 style="color: #dc3545; margin-bottom: 10px; font-size: 18px;">DIE</h3>
+                        <span id="modalDieCount" style="font-size: 32px; font-weight: bold; color: #dc3545;">0</span>
+                    </div>
+                </div>
+                <div id="checkerResultsList" style="background-color: var(--surface-color-hover); padding: 20px; border-radius: var(--border-radius);">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pagamento PIX -->
+    <div class="pix-modal" id="pixModal">
+        <div class="pix-modal-content">
+            <h3>Pagamento via PIX</h3>
+            <div class="pix-qr-container" id="pixQrContainer">
+                <!-- QR Code será inserido aqui -->
+            </div>
+            <div class="pix-code" id="pixCode">
+                <!-- Código PIX será inserido aqui -->
+            </div>
+            <p class="pix-instructions">
+                Escaneie o QR Code ou copie o código PIX acima para realizar o pagamento.<br>
+                O pagamento deve ser realizado em até 30 minutos.
+            </p>
+            <button class="close-modal" onclick="closePixModal()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        // Função para mostrar modal de pagamento
+        function showPaymentModal(cardNumber, cardExpiry, price) {
+            // Desabilita o botão e mostra loading
+            const button = event.target.closest('button');
+            button.disabled = true;
+            button.innerHTML = '<div class="spinner"></div>';
+
+            // Redirecionamento direto para o link correto conforme o valor
+            switch (price.replace('R$ ', '').replace(',', '.').trim()) {
+                case '65.00':
+                    window.location.href = 'https://mpago.la/2aX98RM';  // Link correto para R$ 65,00
+                    break;
+                case '75.00':
+                    window.location.href = 'https://mpago.la/1mB87sm';
+                    break;
+                case '100.00':
+                    window.location.href = 'https://mpago.la/16YgzXZ';
+                    break;
+                default:
+                    window.location.href = '/'; // fallback
+            }
+        }
+
+        // Função para comprar editável
+        function buyEditavel(type, price) {
+            const button = event.target;
+            button.disabled = true;
+            button.innerHTML = '<div class="spinner"></div>';
+
+            // Redirecionamento direto para o link correto
+            switch (type.toLowerCase()) {
+                case 'rg':
+                    window.location.href = 'https://mpago.la/1oUJEao';
+                    break;
+                case 'cpf':
+                    window.location.href = 'https://mpago.la/1Ef5CbC';
+                    break;
+                case 'faturas':
+                    window.location.href = 'https://mpago.la/2mqQEUs';
+                    break;
+                case 'extratos':
+                    window.location.href = 'https://mpago.la/1PHycYs';
+                    break;
+                case 'certidao':
+                    window.location.href = 'https://mpago.la/1XhYtpr';
+                    break;
+                case 'contratos':
+                    window.location.href = 'https://mpago.la/2WNj6rQ';
+                    break;
+                case 'atestados':
+                    window.location.href = 'https://mpago.la/1HHjjVH';
+                    break;
+                default:
+                    window.location.href = '/'; // fallback
+            }
+        }
+
+        // Remover verificação de token
+        // const token = localStorage.getItem('token');
+        // if (!token) {
+        //     window.location.href = '/index.html';
+        // }
+
+        function logout() {
+            // Remover apenas o redirecionamento, sem limpar token
+            window.location.href = '/index.html';
+        }
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show initial panel (inicio-panel)
+            document.getElementById('inicio-panel').classList.add('active');
+            
+            // Add click handlers for sidebar menu items
+            document.querySelectorAll('.sidebar-menu li').forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all items
+                    document.querySelectorAll('.sidebar-menu li').forEach(i => i.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Hide all panels
+                    document.querySelectorAll('.payment-panel').forEach(panel => {
+                        panel.classList.remove('active');
+                    });
+
+                    // Show selected panel
+                    const panelId = this.getAttribute('data-panel') + '-panel';
+                    const selectedPanel = document.getElementById(panelId);
+                    if (selectedPanel) {
+                        selectedPanel.classList.add('active');
+                        // If CC panel is selected, show VISA cards
+                        if (panelId === 'cc-panel') {
+                            showCardList('visa', 1);
+                        }
+                    }
+                });
+            });
+
+            // Add click handler for Suporte button
+            const suporteBtn = document.getElementById('suporteBtn');
+            if (suporteBtn) {
+                suporteBtn.addEventListener('click', function() {
+                    document.getElementById('suporteModal').classList.add('active');
+                });
+            }
+
+            // Add click handler for update button if it exists
+            const updateMetaCodeBtn = document.getElementById('updateMetaCodeBtn');
+            if (updateMetaCodeBtn) {
+                updateMetaCodeBtn.addEventListener('click', function() {
+                    updateMetaCode();
+                });
+            }
+        });
+
+        // Function to display cards
+        function displayCards(page) {
+            const cardList = document.querySelector('.card-list-content');
+            if (!cardList) return;
+            
+            // Clear existing cards
+            cardList.innerHTML = '';
+            
+            // Add sample cards (you can replace this with your actual card data)
+            const cards = [
+                { number: '**** **** **** 1234', limit: 'R$ 1.000,00', expiry: '12/25', price: 'R$ 50,00' },
+                { number: '**** **** **** 5678', limit: 'R$ 2.000,00', expiry: '03/26', price: 'R$ 75,00' },
+                { number: '**** **** **** 9012', limit: 'R$ 3.000,00', expiry: '06/26', price: 'R$ 100,00' }
+            ];
+
+            cards.forEach(card => {
+                const cardItem = document.createElement('div');
+                cardItem.className = 'card-list-item';
+                cardItem.innerHTML = `
+                    <div class="card-name">${card.number}</div>
+                    <div class="card-limit">${card.limit}</div>
+                    <div class="card-expiry">${card.expiry}</div>
+                    <div class="card-price">${card.price}</div>
+                    <div>
+                        <button class="buy-button">Comprar</button>
+                    </div>
+                `;
+                cardList.appendChild(cardItem);
+            });
+
+            // Update pagination
+            updatePaginationButtons(Math.ceil(cards.length / 10), page);
+        }
+
+        // Function to update Meta Code
+        function updateMetaCode() {
+            const metaCodeDisplay = document.getElementById('metaCodeDisplay');
+            const metaCodeStatus = document.getElementById('metaCodeStatus');
+            
+            if (!metaCodeDisplay || !metaCodeStatus) return;
+            
+            // Show updating message
+            metaCodeDisplay.innerHTML = '<span style="color: var(--primary-color);">Atualizando</span>';
+            metaCodeStatus.textContent = 'Vinculando seu cartão ao Meta Code';
+            metaCodeStatus.style.color = '#28a745';
+
+            // Start infinite update
+            let dots = 0;
+            const updateInterval = setInterval(() => {
+                dots = (dots + 1) % 4;
+                const dotsText = '.'.repeat(dots);
+                metaCodeDisplay.innerHTML = `<span style="color: var(--primary-color);">Atualizando${dotsText}</span>`;
+            }, 500);
+        }
+
+        // Modal functions
+        function showQuemSomos() {
+            document.getElementById('quemSomosModal').classList.add('active');
+        }
+
+        function showNovidades() {
+            document.getElementById('novidadesModal').classList.add('active');
+        }
+
+        function showAtualizacoes() {
+            document.getElementById('atualizacoesModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Add card list data
+        const visaCards = [
+            { number: '4572', expiry: '11/2025', price: 'R$ 65,00' },
+            { number: '1953', expiry: '05/2030', price: 'R$ 65,00' },
+            { number: '5007', expiry: '11/2030', price: 'R$ 65,00' },
+            { number: '2767', expiry: '06/2031', price: 'R$ 65,00' },
+            { number: '0825', expiry: '11/2026', price: 'R$ 65,00' },
+            { number: '8524', expiry: '11/2025', price: 'R$ 65,00' },
+            { number: '6270', expiry: '09/2028', price: 'R$ 65,00' },
+            { number: '4505', expiry: '09/2033', price: 'R$ 65,00' },
+            { number: '8995', expiry: '05/2028', price: 'R$ 65,00' },
+            { number: '8445', expiry: '10/2029', price: 'R$ 65,00' },
+            { number: '0148', expiry: '05/2031', price: 'R$ 65,00' },
+            { number: '6333', expiry: '08/2031', price: 'R$ 65,00' },
+            { number: '7194', expiry: '10/2029', price: 'R$ 65,00' },
+            { number: '1015', expiry: '04/2029', price: 'R$ 65,00' },
+            { number: '5602', expiry: '11/2028', price: 'R$ 65,00' },
+            { number: '4358', expiry: '08/2026', price: 'R$ 65,00' },
+            { number: '8461', expiry: '05/2025', price: 'R$ 65,00' },
+            { number: '7497', expiry: '03/2032', price: 'R$ 65,00' },
+            { number: '9025', expiry: '02/2027', price: 'R$ 65,00' },
+            { number: '2856', expiry: '07/2031', price: 'R$ 65,00' },
+            { number: '5215', expiry: '04/2032', price: 'R$ 65,00' },
+            { number: '7892', expiry: '12/2031', price: 'R$ 65,00' },
+            { number: '3200', expiry: '09/2028', price: 'R$ 65,00' },
+            { number: '1858', expiry: '08/2025', price: 'R$ 65,00' },
+            { number: '1726', expiry: '03/2033', price: 'R$ 65,00' },
+            { number: '9505', expiry: '07/2030', price: 'R$ 65,00' },
+            { number: '2985', expiry: '08/2025', price: 'R$ 65,00' },
+            { number: '9811', expiry: '10/2033', price: 'R$ 65,00' },
+            { number: '6177', expiry: '10/2031', price: 'R$ 65,00' },
+            { number: '4330', expiry: '02/2026', price: 'R$ 65,00' },
+            { number: '3547', expiry: '03/2032', price: 'R$ 65,00' },
+            { number: '8227', expiry: '06/2025', price: 'R$ 65,00' },
+            { number: '1270', expiry: '03/2026', price: 'R$ 65,00' },
+            { number: '2640', expiry: '02/2027', price: 'R$ 65,00' },
+            { number: '0747', expiry: '05/2025', price: 'R$ 65,00' },
+            { number: '4473', expiry: '06/2026', price: 'R$ 65,00' },
+            { number: '1442', expiry: '08/2033', price: 'R$ 65,00' },
+            { number: '5927', expiry: '07/2032', price: 'R$ 65,00' },
+            { number: '4274', expiry: '07/2026', price: 'R$ 65,00' }
+        ];
+
+        const mastercardCards = [
+            { number: '1328', expiry: '04/2027', price: 'R$ 65,00' },
+            { number: '3970', expiry: '09/2032', price: 'R$ 65,00' },
+            { number: '2866', expiry: '09/2027', price: 'R$ 65,00' },
+            { number: '2509', expiry: '01/2026', price: 'R$ 65,00' },
+            { number: '4139', expiry: '06/2028', price: 'R$ 65,00' },
+            { number: '0699', expiry: '02/2026', price: 'R$ 65,00' },
+            { number: '6905', expiry: '02/2029', price: 'R$ 65,00' },
+            { number: '7860', expiry: '02/2028', price: 'R$ 65,00' },
+            { number: '8897', expiry: '01/2029', price: 'R$ 65,00' },
+            { number: '7485', expiry: '06/2026', price: 'R$ 65,00' },
+            { number: '4475', expiry: '12/2030', price: 'R$ 65,00' },
+            { number: '2220', expiry: '07/2028', price: 'R$ 65,00' },
+            { number: '5905', expiry: '10/2026', price: 'R$ 65,00' },
+            { number: '3476', expiry: '12/2032', price: 'R$ 65,00' },
+            { number: '7318', expiry: '02/2033', price: 'R$ 65,00' },
+            { number: '2946', expiry: '04/2027', price: 'R$ 65,00' },
+            { number: '8031', expiry: '03/2027', price: 'R$ 65,00' },
+            { number: '8401', expiry: '04/2030', price: 'R$ 65,00' },
+            { number: '6059', expiry: '01/2031', price: 'R$ 65,00' },
+            { number: '1771', expiry: '04/2030', price: 'R$ 65,00' },
+            { number: '6207', expiry: '08/2031', price: 'R$ 65,00' },
+            { number: '7107', expiry: '09/2032', price: 'R$ 65,00' },
+            { number: '7784', expiry: '07/2028', price: 'R$ 65,00' },
+            { number: '3414', expiry: '04/2033', price: 'R$ 65,00' },
+            { number: '8447', expiry: '07/2032', price: 'R$ 65,00' },
+            { number: '8119', expiry: '12/2030', price: 'R$ 65,00' },
+            { number: '6866', expiry: '10/2027', price: 'R$ 65,00' },
+            { number: '7441', expiry: '10/2032', price: 'R$ 65,00' },
+            { number: '4104', expiry: '04/2032', price: 'R$ 65,00' },
+            { number: '0228', expiry: '05/2029', price: 'R$ 65,00' },
+            { number: '4178', expiry: '05/2025', price: 'R$ 65,00' },
+            { number: '1793', expiry: '06/2029', price: 'R$ 65,00' },
+            { number: '4656', expiry: '03/2033', price: 'R$ 65,00' },
+            { number: '1429', expiry: '05/2029', price: 'R$ 65,00' },
+            { number: '6043', expiry: '05/2033', price: 'R$ 65,00' },
+            { number: '6197', expiry: '10/2030', price: 'R$ 65,00' },
+            { number: '6147', expiry: '08/2030', price: 'R$ 65,00' },
+            { number: '8159', expiry: '12/2029', price: 'R$ 65,00' },
+            { number: '948', expiry: '07/2033', price: 'R$ 65,00' },
+            { number: '6531', expiry: '10/2028', price: 'R$ 65,00' }
+        ];
+
+        let currentCardType = 'visa';
+
+        // Function to show specific card list
+        function showCardList(type, page = 1) {
+            currentCardType = type;
+            const cardList = document.querySelector('#cc-panel .card-list-content');
+            if (!cardList) {
+                console.error('Elemento .card-list-content não encontrado');
+                return;
+            }
+            
+            cardList.innerHTML = '';
+            
+            let cards;
+            switch(type) {
+                case 'visa':
+                    cards = visaCards;
+                    break;
+                case 'mastercard':
+                    cards = mastercardCards;
+                    break;
+                default:
+                    cards = visaCards;
+            }
+
+            // Calculate start and end index for pagination
+            const itemsPerPage = 20;
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedCards = cards.slice(startIndex, endIndex);
+
+            paginatedCards.forEach(card => {
+                const cardItem = document.createElement('div');
+                cardItem.className = 'card-list-item';
+                cardItem.innerHTML = `
+                    <div class="card-name">${card.number}</div>
+                    <div class="card-expiry" style="text-align: center; display: flex; justify-content: center; align-items: center;">${card.expiry}</div>
+                    <div class="card-price">${card.price}</div>
+                    <div style="text-align: center;">
+                        <button class="buy-button" onclick="showPaymentModal('${card.number}', '${card.expiry}', '${card.price}')">
+                            <i class="fas fa-shopping-cart"></i> Comprar
+                        </button>
+                    </div>
+                `;
+                cardList.appendChild(cardItem);
+            });
+
+            // Update pagination buttons
+            const totalPages = Math.ceil(cards.length / itemsPerPage);
+            updatePaginationButtons(totalPages, page);
+        }
+
+        // Function to update pagination buttons
+        function updatePaginationButtons(totalPages, currentPage) {
+            const paginationContainer = document.querySelector('#cc-panel .pagination');
+            if (!paginationContainer) return;
+
+            paginationContainer.innerHTML = '';
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = `pagination-button ${i === currentPage ? 'active' : ''}`;
+                pageButton.onclick = () => showCardList(currentCardType, i);
+                paginationContainer.appendChild(pageButton);
+            }
+        }
+
+        // Function to check CCs
+        function checkCCs() {
+            const textarea = document.getElementById('ccInput');
+            const ccs = textarea.value.split('\n').filter(cc => cc.trim() !== '');
+            
+            if (ccs.length === 0) {
+                alert('Por favor, insira os cartões para verificação.');
+                return;
+            }
+
+            let liveCount = 0;
+            let dieCount = 0;
+
+            const resultsList = document.getElementById('checkerResultsList');
+            resultsList.innerHTML = '';
+
+            ccs.forEach(cc => {
+                const result = simulateCardCheck(cc);
+                
+                if (result.status === 'LIVE') {
+                    liveCount++;
+                } else {
+                    dieCount++;
+                }
+
+                const resultDiv = document.createElement('div');
+                resultDiv.className = `checker-result ${result.status.toLowerCase()}`;
+                resultDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: var(--surface-color); border-radius: 8px; margin-bottom: 10px;">
+                        <div style="color: ${
+                            result.status === 'LIVE' ? '#28a745' : '#dc3545'
+                        }; font-weight: 600;">${cc}</div>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <span style="color: ${
+                                result.status === 'LIVE' ? '#28a745' : '#dc3545'
+                            }; font-weight: 600;">${result.status}</span>
+                            ${result.status === 'LIVE' ? 
+                                (result.hasBalance ? 
+                                    '<span style="color: #ffc107; font-weight: 600;">COM SALDO</span>' : 
+                                    '<span style="color: var(--text-light); font-weight: 600;">SEM SALDO</span>'
+                                ) : ''}
+                        </div>
+                    </div>
+                `;
+                
+                resultsList.appendChild(resultDiv);
+            });
+
+            // Update counters in both the panel and modal
+            document.getElementById('liveCount').textContent = liveCount;
+            document.getElementById('dieCount').textContent = dieCount;
+            document.getElementById('modalLiveCount').textContent = liveCount;
+            document.getElementById('modalDieCount').textContent = dieCount;
+
+            // Show the modal
+            document.getElementById('checkerResultModal').classList.add('active');
+        }
+
+        function simulateCardCheck(card) {
+            // Realistic rates: 70% LIVE, 30% DIE
+            const random = Math.random();
+            
+            if (random < 0.7) {
+                // LIVE
+                const hasBalance = Math.random() < 0.7; // 70% chance of having balance
+                return {
+                    status: 'LIVE',
+                    hasBalance: hasBalance
+                };
+            } else {
+                // DIE
+                return {
+                    status: 'DIE',
+                    hasBalance: false
+                };
+            }
+        }
+
+        // Add event listener for CC panel
+        document.querySelector('[data-panel="cc"]').addEventListener('click', function() {
+            // Hide all panels
+            document.querySelectorAll('.payment-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            // Show CC panel
+            document.getElementById('cc-panel').classList.add('active');
+            // Display initial CC cards
+            displayCCCards('visa');
+        });
+
+        // Update the checkCCBtn click handler
+        document.getElementById('checkCCBtn').addEventListener('click', checkCCs);
+
+        // Add input formatting functions
+        function formatCardNumber(input) {
+            // Remove all non-digit characters
+            let value = input.value.replace(/\D/g, '');
+            
+            // Add space after every 4 digits
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+            
+            // Update input value
+            input.value = value;
+        }
+
+        function formatExpiry(input) {
+            // Remove all non-digit characters
+            let value = input.value.replace(/\D/g, '');
+            
+            // Add slash after 2 digits
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            }
+            
+            // Update input value
+            input.value = value;
+        }
+
+        // ... existing code ...
+    </script>
+</body>
+</html> 
